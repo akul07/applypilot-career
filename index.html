@@ -12,13 +12,13 @@
         <div class="brand auth-brand">
           <div class="brand-mark">AP</div>
           <div>
-            <p class="eyebrow">Public career tracker</p>
+            <p class="eyebrow">Career tracker</p>
             <h1>ApplyPilot</h1>
           </div>
         </div>
         <h2>Track applications from first goal to final offer.</h2>
-        <p class="auth-copy">Sign in with Google or an existing email account, answer a few job-search questions, then add your resume details and applications. Your data is saved privately to your account.</p>
-        <div class="auth-status" id="authStatus">Sign in to start.</div>
+        <p class="auth-copy">Sign in, set your job goals, add your resume details, and track every application in one focused workspace.</p>
+        <div class="auth-status" id="authStatus" aria-live="polite"></div>
         <button class="primary-button wide-button" id="googleSignInBtn" type="button">Continue with Google</button>
         <div class="auth-divider">or use email</div>
         <form id="emailAuthForm" class="auth-form">
@@ -34,7 +34,7 @@
         <div class="brand">
           <div class="brand-mark">AP</div>
           <div>
-            <p class="eyebrow">Public career tracker</p>
+            <p class="eyebrow">Career tracker</p>
             <h1>ApplyPilot</h1>
           </div>
         </div>
@@ -43,7 +43,7 @@
           <button class="nav-item active" data-view="setup">Job Goals</button>
           <button class="nav-item" data-view="dashboard">Dashboard</button>
           <button class="nav-item" data-view="jobs">Job Tracker</button>
-          <button class="nav-item" data-view="match">Match Lab</button>
+          <button class="nav-item" data-view="match">Resume Match</button>
           <button class="nav-item" data-view="kit">Apply Kit</button>
           <button class="nav-item" data-view="profile">Resume Profile</button>
         </nav>
@@ -57,30 +57,12 @@
           <button class="ghost-button" id="signOutBtn" type="button">Sign out</button>
         </section>
 
-        <section class="profile-card" aria-label="Database status">
-          <p class="section-kicker">Database</p>
-          <h2 id="cloudStatus">Login required</h2>
-          <p id="cloudStatusText">Sign in to save data to Firestore.</p>
-          <button class="ghost-button" id="syncNowBtn" type="button">Sync now</button>
-        </section>
-
-        <section class="profile-card" aria-label="Cost mode">
-          <p class="section-kicker">AI cost mode</p>
-          <h2>On-demand</h2>
-          <p>No AI runs 24/7. Matching is local by default; paid AI should run only when a user clicks generate.</p>
-        </section>
-
-        <section class="storage-card" aria-label="Data controls">
-          <button class="ghost-button" id="exportBtn">Export backup</button>
-          <label class="ghost-button file-button">Import backup<input id="importFile" type="file" accept="application/json" /></label>
-          <button class="danger-button" id="resetBtn">Reset demo data</button>
-        </section>
       </aside>
 
       <main>
         <header class="topbar">
           <div>
-            <p class="eyebrow">Application command center</p>
+            <p class="eyebrow">Your job search workspace</p>
             <h2 id="viewTitle">Job Goals</h2>
           </div>
           <div class="topbar-actions">
@@ -110,11 +92,11 @@
               <button class="primary-button" type="submit">Save goals and continue</button>
             </form>
             <section class="panel">
-              <div class="panel-heading"><div><p class="section-kicker">Why first?</p><h3>Better matching</h3></div></div>
+              <div class="panel-heading"><div><p class="section-kicker">Next steps</p><h3>Simple setup</h3></div></div>
               <div class="cost-list">
-                <article><strong>Goal before resume</strong><span>ApplyPilot first learns what jobs the user wants, then asks for resume/profile data.</span></article>
-                <article><strong>Saved to profile</strong><span>Answers are stored in Firestore under the signed-in user's profile document.</span></article>
-                <article><strong>Lower AI cost</strong><span>These answers improve local matching and reduce unnecessary AI calls.</span></article>
+                <article><strong>1. Save goals</strong><span>Tell ApplyPilot what roles, locations, and skills matter most.</span></article>
+                <article><strong>2. Add resume</strong><span>Paste your profile details once and reuse them for every application.</span></article>
+                <article><strong>3. Track jobs</strong><span>Add job descriptions, compare fit, and follow up at the right time.</span></article>
               </div>
             </section>
           </div>
@@ -139,7 +121,7 @@
               <div class="panel-heading"><div><p class="section-kicker">New opportunity</p><h3>Add or score a job</h3></div></div>
               <label>Company<input name="company" required placeholder="Company name" /></label>
               <label>Role<input name="role" required placeholder="Full Stack Developer" /></label>
-              <label>Job URL<input name="url" type="url" placeholder="https://..." /></label>
+              <label>Job URL<input name="url" type="url" placeholder="Paste job link" /></label>
               <div class="two-col"><label>Location<input name="location" placeholder="Remote / Bengaluru" /></label><label>Status<select name="status"><option>Wishlist</option><option>Applied</option><option>Interview</option><option>Offer</option><option>Rejected</option></select></label></div>
               <label>Job description<textarea name="description" rows="9" required placeholder="Paste the job description here. ApplyPilot will compare it with your profile."></textarea></label>
               <button class="primary-button" type="submit">Save and score</button>
@@ -150,7 +132,7 @@
 
         <section class="view" id="matchView">
           <div class="workspace-grid">
-            <section class="panel"><div class="panel-heading"><div><p class="section-kicker">Accuracy engine</p><h3>Resume Match Lab</h3></div></div><label>Paste job description<textarea id="labDescription" rows="16" placeholder="Paste any job description to test match strength before applying."></textarea></label><button class="primary-button" id="labScoreBtn">Calculate match</button></section>
+            <section class="panel"><div class="panel-heading"><div><p class="section-kicker">Match checker</p><h3>Resume Match</h3></div></div><label>Paste job description<textarea id="labDescription" rows="16" placeholder="Paste any job description to test match strength before applying."></textarea></label><button class="primary-button" id="labScoreBtn">Calculate match</button></section>
             <section class="panel match-panel"><div class="score-ring" id="labScore" data-score="0%"></div><h3 id="labVerdict">Waiting for job description</h3><p id="labSummary">The score uses your goals, skills, resume, domains, and missing keyword gaps.</p><div class="match-columns"><div><p class="section-kicker">Matched</p><div id="labMatched" class="chip-cloud"></div></div><div><p class="section-kicker">Missing</p><div id="labMissing" class="chip-cloud muted"></div></div></div></section>
           </div>
         </section>
@@ -168,17 +150,17 @@
               <div class="panel-heading"><div><p class="section-kicker">Step 2</p><h3>Resume and profile</h3></div></div>
               <label>Name<input name="name" placeholder="Your name" /></label>
               <label>Professional headline<input name="title" placeholder="Full Stack Developer" /></label>
-              <label>Email<input name="email" type="email" placeholder="you@example.com" /></label>
+              <label>Email<input name="email" type="email" placeholder="you@gmail.com" /></label>
               <label>Phone<input name="phone" placeholder="Optional" /></label>
               <label>Location<input name="location" placeholder="City / Remote" /></label>
-              <label>LinkedIn / Portfolio<input name="linkedin" placeholder="https://..." /></label>
+              <label>LinkedIn / Portfolio<input name="linkedin" placeholder="LinkedIn or portfolio link" /></label>
               <label>Skills<textarea name="skills" rows="5" placeholder="PHP, Laravel, MySQL, React, AWS"></textarea></label>
               <label>Domains<textarea name="domains" rows="4" placeholder="E-commerce, CRM, Inventory, SaaS"></textarea></label>
               <label>Resume summary / pasted resume<textarea name="resumeText" rows="7" placeholder="Paste resume summary, projects, education, experience, achievements"></textarea></label>
               <label>Achievements<textarea name="highlights" rows="5" placeholder="Built dashboards, optimized queries, managed production support"></textarea></label>
               <button class="primary-button" type="submit">Save resume profile</button>
             </form>
-            <section class="panel"><div class="panel-heading"><div><p class="section-kicker">Public product mode</p><h3>Low-cost design</h3></div></div><div class="cost-list"><article><strong>Database</strong><span>Firestore stores each user's auth profile, job goals, resume profile, and applications.</span></article><article><strong>AI</strong><span>Local matching is free. Paid AI should run only on click, cache results, and set daily limits.</span></article><article><strong>Backend</strong><span>No always-on server is needed for this version. Cloud Run can stay off until Gmail sync is required.</span></article><article><strong>Abuse control</strong><span>Google/email login plus Firestore rules avoids open public writes.</span></article></div></section>
+            <section class="panel"><div class="panel-heading"><div><p class="section-kicker">Profile tips</p><h3>Make matching stronger</h3></div></div><div class="cost-list"><article><strong>Use clear skills</strong><span>Add languages, frameworks, databases, tools, and role-specific keywords.</span></article><article><strong>Add real outcomes</strong><span>Include projects, achievements, metrics, and production experience.</span></article><article><strong>Keep it current</strong><span>Update your profile when you change target roles or learn new skills.</span></article></div></section>
           </div>
         </section>
       </main>

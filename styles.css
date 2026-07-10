@@ -637,3 +637,7 @@ body:not(.auth-required) .app-shell {
   color: #c6d1d7;
   overflow-wrap: anywhere;
 }
+
+.auth-status:empty {
+  display: none;
+}

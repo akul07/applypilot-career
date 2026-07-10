@@ -1,12 +1,3 @@
-const canonicalAuthHost = "akul-applypilot-20260710.web.app";
-const redirectedAuthHosts = new Set(["applypilot-career.web.app", "applypilot-career.firebaseapp.com"]);
-
-if (redirectedAuthHosts.has(window.location.hostname)) {
-  const canonicalUrl = new URL(window.location.href);
-  canonicalUrl.hostname = canonicalAuthHost;
-  window.location.replace(canonicalUrl.toString());
-}
-
 const config = window.APPLYPILOT_CONFIG || {};
 
 const defaultProfile = {
@@ -41,30 +32,6 @@ const defaultProfile = {
   }
 };
 
-const seedJobs = [
-  {
-    id: crypto.randomUUID(),
-    company: "CraftCart Technologies",
-    role: "Full Stack Developer",
-    location: "Hybrid / Remote",
-    url: "https://example.com/full-stack-dev",
-    status: "Wishlist",
-    createdAt: new Date().toISOString(),
-    followUpAt: daysFromNow(3),
-    description: "Full Stack Developer role requiring JavaScript, SQL, REST API, e-commerce, dashboards, CRM, testing, deployment, and production support."
-  },
-  {
-    id: crypto.randomUUID(),
-    company: "OpsBoard Systems",
-    role: "Business Application Developer",
-    location: "Remote",
-    url: "https://example.com/business-app-dev",
-    status: "Applied",
-    createdAt: new Date().toISOString(),
-    followUpAt: daysFromNow(5),
-    description: "Build business dashboards, reporting modules, admin panels, database workflows, customer tools, API integrations, and role based access control."
-  }
-];
 
 const state = {
   profile: normalizeProfile(defaultProfile),
@@ -95,7 +62,7 @@ const titles = {
   setup: "Job Goals",
   dashboard: "Dashboard",
   jobs: "Job Tracker",
-  match: "Match Lab",
+  match: "Resume Match",
   kit: "Apply Kit",
   profile: "Resume Profile"
 };
@@ -128,10 +95,6 @@ function bindEvents() {
     renderKit();
   });
   document.querySelector("#copyMessageBtn").addEventListener("click", copyMessage);
-  document.querySelector("#exportBtn").addEventListener("click", exportBackup);
-  document.querySelector("#importFile").addEventListener("change", importBackup);
-  document.querySelector("#syncNowBtn").addEventListener("click", syncNow);
-  document.querySelector("#resetBtn").addEventListener("click", resetDemoData);
   document.querySelector("#themeBtn").addEventListener("click", () => {
     document.body.classList.toggle("dark");
     localStorage.setItem("applyPilotTheme", document.body.classList.contains("dark") ? "dark" : "light");
@@ -163,7 +126,7 @@ async function handleAuthState(user) {
     state.jobs = [];
     document.body.classList.add("auth-required");
     document.body.classList.remove("signed-in");
-    setAuthStatus("Sign in to start.");
+    setAuthStatus("");
     setCloudStatus("Login required", "Sign in to save data to Firestore.");
     renderAll();
     return;
@@ -570,78 +533,6 @@ function buildMessage(job) {
   return `Subject: Application for ${job.role}\n\nHi Hiring Team,\n\nI am ${state.profile.name || "a candidate"}, applying for ${job.role} at ${job.company}. I am targeting ${state.profile.goals?.targetRole || state.profile.title || "this type of role"}, and this opening looks relevant to my skills in ${topMatches || state.profile.skills.slice(0, 6).join(", ") || "the listed requirements"}.\n\nRelevant highlights:\n${highlights || "- Profile highlights will appear here after the user adds resume details."}\n\nI would be happy to discuss how I can contribute to your team.\n\nRegards,\n${state.profile.name || "Candidate"}\n${state.profile.phone || ""}\n${state.profile.email || state.user?.email || ""}\n${state.profile.linkedin || ""}`;
 }
 
-async function syncNow() {
-  requireLogin();
-  await profileRef().set(state.profile, { merge: true });
-  const batch = state.db.batch();
-  state.jobs.forEach((job) => batch.set(jobRef(job.id), job, { merge: true }));
-  await batch.commit();
-  setCloudStatus("Firestore", "Profile, job goals, resume data, and applications are synced.");
-}
-
-function exportBackup() {
-  const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), profile: state.profile, jobs: state.jobs }, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "applypilot-backup.json";
-  link.click();
-  URL.revokeObjectURL(url);
-}
-
-function importBackup(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async () => {
-    try {
-      const data = JSON.parse(reader.result);
-      if (data.profile) state.profile = normalizeProfile(data.profile);
-      if (Array.isArray(data.jobs)) state.jobs = data.jobs.map(withScore);
-      persistLocal();
-      hydrateSetupForm();
-      hydrateProfileForm();
-      renderAll();
-      if (state.user) await syncNow();
-    } catch {
-      alert("This backup file could not be imported.");
-    }
-  };
-  reader.readAsText(file);
-}
-
-async function resetDemoData() {
-  requireLogin();
-  state.profile = normalizeProfile({
-    ...defaultProfile,
-    name: state.user.displayName || "Demo Candidate",
-    email: state.user.email || "",
-    setupComplete: true,
-    goals: {
-      ...defaultProfile.goals,
-      targetRole: "Full Stack Developer",
-      experienceLevel: "3-5 years",
-      jobType: "Full-time",
-      workMode: "Remote",
-      locations: "Remote, India",
-      salaryRange: "Negotiable",
-      prioritySkills: ["JavaScript", "SQL", "REST API", "Dashboard"],
-      preferredCompanies: "SaaS, e-commerce, product teams",
-      jobBoards: "LinkedIn, Naukri, company career pages"
-    },
-    title: "Full Stack Developer",
-    skills: ["JavaScript", "SQL", "REST API", "Dashboard", "CRM", "E-commerce"],
-    domains: ["web apps", "business systems", "customer support"],
-    highlights: defaultProfile.highlights,
-    resumeText: "Built and maintained production web applications, dashboards, reporting modules, APIs, and database workflows."
-  });
-  state.jobs = seedJobs.map(withScore);
-  hydrateSetupForm();
-  hydrateProfileForm();
-  await syncNow();
-  renderAll();
-}
-
 function copyMessage() {
   const output = document.querySelector("#messageOutput");
   output.select();
@@ -655,8 +546,10 @@ function requireLogin() {
 }
 
 function renderCloudStatus() {
-  document.querySelector("#cloudStatus").textContent = state.cloud.status;
-  document.querySelector("#cloudStatusText").textContent = state.cloud.detail;
+  const status = document.querySelector("#cloudStatus");
+  const detail = document.querySelector("#cloudStatusText");
+  if (status) status.textContent = state.cloud.status;
+  if (detail) detail.textContent = state.cloud.detail;
 }
 
 function setCloudStatus(status, detail) {
