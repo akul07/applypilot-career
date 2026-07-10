@@ -17,7 +17,9 @@
       "firestore.indexes.json",
       "firebase-debug.log",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      ".vscode",
+      ".vscode/**"
     ],
     "headers": [
       {

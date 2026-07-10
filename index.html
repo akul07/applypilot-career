@@ -35,6 +35,7 @@
       <nav class="nav-list" aria-label="Primary">
         <button class="nav-item active" data-view="dashboard" type="button">Dashboard</button>
         <button class="nav-item" data-view="setup" type="button">Goal + Resume</button>
+        <button class="nav-item" data-view="discover" type="button">Discover Jobs</button>
         <button class="nav-item" data-view="jobs" type="button">Job Tracker</button>
         <button class="nav-item" data-view="mail" type="button">Apply Mail</button>
       </nav>
@@ -47,15 +48,16 @@
           <p class="eyebrow">Private career workspace</p>
           <h1 id="viewTitle">Dashboard</h1>
         </div>
-        <button class="secondary" id="quickAddBtn" type="button">Add job</button>
+        <button class="secondary" id="quickAddBtn" type="button">Find jobs</button>
       </header>
 
       <section class="view active" id="dashboardView">
         <div class="metric-grid">
           <article class="metric-card"><span>Total jobs</span><strong id="totalJobs">0</strong></article>
+          <article class="metric-card"><span>90%+ matches</span><strong id="matchedJobs">0</strong></article>
           <article class="metric-card"><span>Applied</span><strong id="appliedJobs">0</strong></article>
           <article class="metric-card"><span>Interviews</span><strong id="interviewJobs">0</strong></article>
-          <article class="metric-card"><span>Follow-ups</span><strong id="followUpJobs">0</strong></article>
+          <article class="metric-card"><span>Mail ready</span><strong id="mailReadyJobs">0</strong></article>
         </div>
 
         <div class="dashboard-grid">
@@ -71,6 +73,7 @@
               <div><dt>Location</dt><dd id="goalLocation">Not set</dd></div>
               <div><dt>Work type</dt><dd id="goalType">Not set</dd></div>
               <div><dt>Top skills</dt><dd id="goalSkills">Not set</dd></div>
+              <div><dt>Resume</dt><dd id="goalResume">Not uploaded</dd></div>
             </dl>
           </article>
 
@@ -84,6 +87,17 @@
             <div class="pipeline" id="pipelineList"></div>
           </article>
         </div>
+
+        <article class="panel dashboard-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Mail tracker</p>
+              <h2>Drafts and sent emails</h2>
+            </div>
+            <button class="secondary small" data-go-view="mail" type="button">Open mail</button>
+          </div>
+          <div class="mail-tracker" id="mailTrackerList"></div>
+        </article>
 
         <article class="panel">
           <div class="panel-head">
@@ -124,7 +138,8 @@
             <label>Your name<input name="name" placeholder="Your full name" /></label>
             <label>Email<input name="email" type="email" placeholder="you@gmail.com" /></label>
             <label>Phone<input name="phone" placeholder="Phone number" /></label>
-            <label>Resume link<input name="resumeLink" placeholder="Google Drive, portfolio, or resume URL" /></label>
+            <label>Resume file<input id="resumeFile" name="resumeFile" type="file" accept=".pdf,.doc,.docx,.txt" /></label>
+            <div class="upload-card span-2" id="resumeStatus">No resume uploaded</div>
             <label class="span-2">Resume summary<textarea name="resumeSummary" rows="7" placeholder="Paste your resume summary, projects, education, and experience here."></textarea></label>
           </div>
 
@@ -140,6 +155,33 @@
         </form>
       </section>
 
+      <section class="view" id="discoverView">
+        <article class="panel form-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Automatic search</p>
+              <h2>90%+ job matches</h2>
+            </div>
+            <div class="button-row">
+              <label class="compact-field">Minimum match<select id="minMatchSelect"><option selected>90</option><option>85</option><option>80</option></select></label>
+              <button class="primary" id="findJobsBtn" type="button">Find matches</button>
+            </div>
+          </div>
+          <div class="search-summary" id="searchSummary"></div>
+          <p class="status-line" id="discoverStatus"></p>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Matched jobs</p>
+              <h2>Recommended openings</h2>
+            </div>
+          </div>
+          <div class="discovery-list" id="discoveryList"></div>
+        </article>
+      </section>
+
       <section class="view" id="jobsView">
         <article class="panel form-panel">
           <div class="panel-head">
@@ -152,7 +194,6 @@
             <label>Company<input name="company" placeholder="Company name" required /></label>
             <label>Role<input name="role" placeholder="Software Developer" required /></label>
             <label>Recruiter or career email<input name="email" type="email" placeholder="hr@company.com" /></label>
-            <label>Apply link<input name="applyUrl" placeholder="https://company.com/careers/job" /></label>
             <label>Location<input name="location" placeholder="Remote / City" /></label>
             <label>Status<select name="status"><option>Wishlist</option><option>Ready</option><option>Applied</option><option>Follow Up</option><option>Interview</option><option>Offer</option><option>Rejected</option></select></label>
             <label>Follow-up date<input name="followUpDate" type="date" /></label>
@@ -191,6 +232,7 @@
             </div>
             <div class="button-row">
               <button class="secondary" id="copyMailBtn" type="button">Copy</button>
+              <button class="secondary" id="markSentBtn" type="button">Mark sent</button>
               <button class="primary" id="openMailBtn" type="button">Open draft</button>
             </div>
           </div>
