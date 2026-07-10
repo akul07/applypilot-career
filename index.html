@@ -1,175 +1,215 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ApplyPilot</title>
-    <link rel="stylesheet" href="./styles.css" />
-  </head>
-  <body class="auth-required">
-    <section class="auth-gate" id="authGate" aria-label="ApplyPilot login">
-      <div class="auth-card">
-        <div class="brand auth-brand">
-          <div class="brand-mark">AP</div>
-          <div>
-            <p class="eyebrow">Career tracker</p>
-            <h1>ApplyPilot</h1>
-          </div>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ApplyPilot</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main id="authView" class="auth-layout">
+    <section class="auth-panel">
+      <div class="brand-row">
+        <div class="brand-mark">AP</div>
+        <div>
+          <p class="eyebrow">Job search dashboard</p>
+          <h1>ApplyPilot</h1>
         </div>
-        <h2>Track applications from first goal to final offer.</h2>
-        <p class="auth-copy">Sign in, set your job goals, add your resume details, and track every application in one focused workspace.</p>
-        <div class="auth-status" id="authStatus" aria-live="polite"></div>
-        <button class="primary-button wide-button" id="googleSignInBtn" type="button">Continue with Google</button>
-        <div class="auth-divider">or use email</div>
-        <form id="emailAuthForm" class="auth-form">
-          <label>Email<input name="email" type="email" autocomplete="email" required placeholder="you@gmail.com" /></label>
-          <label>Password<input name="password" type="password" autocomplete="current-password" required minlength="6" placeholder="At least 6 characters" /></label>
-          <button class="secondary-button wide-button" id="loginBtn" type="submit">Login</button>
-        </form>
       </div>
+      <h2>Track every application from one clean place.</h2>
+      <p class="lede">Save your job goal, resume profile, applications, follow-ups, and email drafts in your private account.</p>
+      <button class="primary wide" id="googleBtn" type="button">Continue with Google</button>
+      <p class="status-line" id="authStatus"></p>
     </section>
+  </main>
 
-    <div class="app-shell">
-      <aside class="sidebar" aria-label="ApplyPilot workspace">
-        <div class="brand">
-          <div class="brand-mark">AP</div>
-          <div>
-            <p class="eyebrow">Career tracker</p>
-            <h1>ApplyPilot</h1>
-          </div>
+  <main id="appView" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="brand-row compact">
+        <div class="brand-mark">AP</div>
+        <div>
+          <strong>ApplyPilot</strong>
+          <span id="userEmail">Signed in</span>
+        </div>
+      </div>
+      <nav class="nav-list" aria-label="Primary">
+        <button class="nav-item active" data-view="dashboard" type="button">Dashboard</button>
+        <button class="nav-item" data-view="setup" type="button">Goal + Resume</button>
+        <button class="nav-item" data-view="jobs" type="button">Job Tracker</button>
+        <button class="nav-item" data-view="mail" type="button">Apply Mail</button>
+      </nav>
+      <button class="ghost sign-out" id="signOutBtn" type="button">Sign out</button>
+    </aside>
+
+    <section class="workspace">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Private career workspace</p>
+          <h1 id="viewTitle">Dashboard</h1>
+        </div>
+        <button class="secondary" id="quickAddBtn" type="button">Add job</button>
+      </header>
+
+      <section class="view active" id="dashboardView">
+        <div class="metric-grid">
+          <article class="metric-card"><span>Total jobs</span><strong id="totalJobs">0</strong></article>
+          <article class="metric-card"><span>Applied</span><strong id="appliedJobs">0</strong></article>
+          <article class="metric-card"><span>Interviews</span><strong id="interviewJobs">0</strong></article>
+          <article class="metric-card"><span>Follow-ups</span><strong id="followUpJobs">0</strong></article>
         </div>
 
-        <nav class="nav-list" aria-label="Views">
-          <button class="nav-item active" data-view="setup">Job Goals</button>
-          <button class="nav-item" data-view="dashboard">Dashboard</button>
-          <button class="nav-item" data-view="jobs">Job Tracker</button>
-          <button class="nav-item" data-view="match">Resume Match</button>
-          <button class="nav-item" data-view="kit">Apply Kit</button>
-          <button class="nav-item" data-view="profile">Resume Profile</button>
-        </nav>
-
-        <section class="profile-card" aria-label="Current profile">
-          <p class="section-kicker">Profile</p>
-          <h2 id="profileName">Candidate</h2>
-          <p id="profileTitle">Set job goals first</p>
-          <small id="authUserEmail">Not signed in</small>
-          <div class="chip-cloud" id="skillChips"></div>
-          <button class="ghost-button" id="signOutBtn" type="button">Sign out</button>
-        </section>
-
-      </aside>
-
-      <main>
-        <header class="topbar">
-          <div>
-            <p class="eyebrow">Your job search workspace</p>
-            <h2 id="viewTitle">Job Goals</h2>
-          </div>
-          <div class="topbar-actions">
-            <button class="icon-button" id="themeBtn" aria-label="Toggle theme">T</button>
-            <button class="primary-button" data-view-jump="jobs">Add job</button>
-          </div>
-        </header>
-
-        <section class="view active" id="setupView">
-          <div class="workspace-grid">
-            <form class="panel form-panel" id="setupForm">
-              <div class="panel-heading"><div><p class="section-kicker">Step 1</p><h3>Job-search questions</h3></div></div>
-              <label>Which job role are you targeting first?<input name="targetRole" required placeholder="Full Stack Developer" /></label>
-              <div class="two-col">
-                <label>Experience level<select name="experienceLevel"><option>Fresher</option><option>1-2 years</option><option>3-5 years</option><option>5+ years</option></select></label>
-                <label>Job type<select name="jobType"><option>Full-time</option><option>Internship</option><option>Contract</option><option>Freelance</option></select></label>
+        <div class="dashboard-grid">
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">Current goal</p>
+                <h2 id="goalTitle">Add your target role</h2>
               </div>
-              <div class="two-col">
-                <label>Work mode<select name="workMode"><option>Remote</option><option>Hybrid</option><option>On-site</option><option>Any</option></select></label>
-                <label>Start timeline<select name="startTimeline"><option>Immediately</option><option>15 days</option><option>30 days</option><option>60+ days</option></select></label>
+              <button class="secondary small" data-go-view="setup" type="button">Edit</button>
+            </div>
+            <dl class="goal-list">
+              <div><dt>Location</dt><dd id="goalLocation">Not set</dd></div>
+              <div><dt>Work type</dt><dd id="goalType">Not set</dd></div>
+              <div><dt>Top skills</dt><dd id="goalSkills">Not set</dd></div>
+            </dl>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">Pipeline</p>
+                <h2>Application stages</h2>
               </div>
-              <label>Preferred locations<input name="locations" placeholder="Bengaluru, Remote, India" /></label>
-              <label>Expected salary range<input name="salaryRange" placeholder="Example: 6-10 LPA / negotiable" /></label>
-              <label>Top skills for your next job<textarea name="prioritySkills" rows="4" placeholder="Laravel, React, MySQL, APIs"></textarea></label>
-              <label>Preferred companies or industries<textarea name="preferredCompanies" rows="3" placeholder="SaaS, e-commerce, startups, product companies"></textarea></label>
-              <label>Where will you apply?<textarea name="jobBoards" rows="3" placeholder="LinkedIn, Naukri, Indeed, Instahyre, company career pages"></textarea></label>
-              <button class="primary-button" type="submit">Save goals and continue</button>
-            </form>
-            <section class="panel">
-              <div class="panel-heading"><div><p class="section-kicker">Next steps</p><h3>Simple setup</h3></div></div>
-              <div class="cost-list">
-                <article><strong>1. Save goals</strong><span>Tell ApplyPilot what roles, locations, and skills matter most.</span></article>
-                <article><strong>2. Add resume</strong><span>Paste your profile details once and reuse them for every application.</span></article>
-                <article><strong>3. Track jobs</strong><span>Add job descriptions, compare fit, and follow up at the right time.</span></article>
-              </div>
-            </section>
-          </div>
-        </section>
+            </div>
+            <div class="pipeline" id="pipelineList"></div>
+          </article>
+        </div>
 
-        <section class="view" id="dashboardView">
-          <div class="metric-grid">
-            <article class="metric"><span>Total</span><strong id="totalJobs">0</strong><small>tracked opportunities</small></article>
-            <article class="metric"><span>Strong Matches</span><strong id="strongMatches">0</strong><small>score 90% or above</small></article>
-            <article class="metric"><span>Interviews</span><strong id="interviewCount">0</strong><small>active interview stage</small></article>
-            <article class="metric"><span>Follow Ups</span><strong id="followUps">0</strong><small>due this week</small></article>
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Recent work</p>
+              <h2>Latest applications</h2>
+            </div>
+            <button class="secondary small" data-go-view="jobs" type="button">View all</button>
           </div>
-          <div class="split-layout">
-            <section class="panel"><div class="panel-heading"><div><p class="section-kicker">Today</p><h3>Priority Queue</h3></div><button class="secondary-button" data-view-jump="jobs">Manage</button></div><div id="priorityList" class="stack-list"></div></section>
-            <section class="panel"><div class="panel-heading"><div><p class="section-kicker">Pipeline</p><h3>Status Breakdown</h3></div></div><div id="pipelineBars" class="pipeline-bars"></div></section>
-          </div>
-        </section>
+          <div class="job-list compact-list" id="recentJobs"></div>
+        </article>
+      </section>
 
-        <section class="view" id="jobsView">
-          <div class="workspace-grid">
-            <form class="panel form-panel" id="jobForm">
-              <div class="panel-heading"><div><p class="section-kicker">New opportunity</p><h3>Add or score a job</h3></div></div>
-              <label>Company<input name="company" required placeholder="Company name" /></label>
-              <label>Role<input name="role" required placeholder="Full Stack Developer" /></label>
-              <label>Job URL<input name="url" type="url" placeholder="Paste job link" /></label>
-              <div class="two-col"><label>Location<input name="location" placeholder="Remote / Bengaluru" /></label><label>Status<select name="status"><option>Wishlist</option><option>Applied</option><option>Interview</option><option>Offer</option><option>Rejected</option></select></label></div>
-              <label>Job description<textarea name="description" rows="9" required placeholder="Paste the job description here. ApplyPilot will compare it with your profile."></textarea></label>
-              <button class="primary-button" type="submit">Save and score</button>
-            </form>
-            <section class="panel"><div class="panel-heading"><div><p class="section-kicker">Applications</p><h3>Tracked jobs</h3></div><select id="statusFilter" aria-label="Filter by status"><option value="All">All</option><option>Wishlist</option><option>Applied</option><option>Interview</option><option>Offer</option><option>Rejected</option></select></div><div id="jobList" class="job-list"></div></section>
+      <section class="view" id="setupView">
+        <form class="panel form-panel" id="profileForm">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Step 1</p>
+              <h2>Job goal</h2>
+            </div>
+            <button class="primary" type="submit">Save profile</button>
           </div>
-        </section>
-
-        <section class="view" id="matchView">
-          <div class="workspace-grid">
-            <section class="panel"><div class="panel-heading"><div><p class="section-kicker">Match checker</p><h3>Resume Match</h3></div></div><label>Paste job description<textarea id="labDescription" rows="16" placeholder="Paste any job description to test match strength before applying."></textarea></label><button class="primary-button" id="labScoreBtn">Calculate match</button></section>
-            <section class="panel match-panel"><div class="score-ring" id="labScore" data-score="0%"></div><h3 id="labVerdict">Waiting for job description</h3><p id="labSummary">The score uses your goals, skills, resume, domains, and missing keyword gaps.</p><div class="match-columns"><div><p class="section-kicker">Matched</p><div id="labMatched" class="chip-cloud"></div></div><div><p class="section-kicker">Missing</p><div id="labMissing" class="chip-cloud muted"></div></div></div></section>
+          <div class="form-grid">
+            <label>Target role<input name="targetRole" placeholder="Full Stack Developer" required /></label>
+            <label>Preferred location<input name="targetLocations" placeholder="Remote, Bengaluru, Delhi NCR" /></label>
+            <label>Work type<select name="workType"><option>Full-time</option><option>Internship</option><option>Contract</option><option>Remote</option></select></label>
+            <label>Top skills<textarea name="skills" rows="4" placeholder="React, Node.js, Firebase, SQL, APIs"></textarea></label>
           </div>
-        </section>
 
-        <section class="view" id="kitView">
-          <div class="workspace-grid">
-            <section class="panel"><div class="panel-heading"><div><p class="section-kicker">Selected job</p><h3>Application Kit</h3></div><select id="kitJobSelect" aria-label="Choose job"></select></div><div id="kitDetails" class="kit-details"></div></section>
-            <section class="panel"><div class="panel-heading"><div><p class="section-kicker">Generated</p><h3>Recruiter Message</h3></div><button class="secondary-button" id="copyMessageBtn">Copy</button></div><textarea id="messageOutput" class="output-box" rows="18" readonly></textarea></section>
+          <div class="section-rule"></div>
+          <div class="panel-head tight">
+            <div>
+              <p class="eyebrow">Step 2</p>
+              <h2>Resume profile</h2>
+            </div>
           </div>
-        </section>
-
-        <section class="view" id="profileView">
-          <div class="workspace-grid">
-            <form class="panel form-panel" id="profileForm">
-              <div class="panel-heading"><div><p class="section-kicker">Step 2</p><h3>Resume and profile</h3></div></div>
-              <label>Name<input name="name" placeholder="Your name" /></label>
-              <label>Professional headline<input name="title" placeholder="Full Stack Developer" /></label>
-              <label>Email<input name="email" type="email" placeholder="you@gmail.com" /></label>
-              <label>Phone<input name="phone" placeholder="Optional" /></label>
-              <label>Location<input name="location" placeholder="City / Remote" /></label>
-              <label>LinkedIn / Portfolio<input name="linkedin" placeholder="LinkedIn or portfolio link" /></label>
-              <label>Skills<textarea name="skills" rows="5" placeholder="PHP, Laravel, MySQL, React, AWS"></textarea></label>
-              <label>Domains<textarea name="domains" rows="4" placeholder="E-commerce, CRM, Inventory, SaaS"></textarea></label>
-              <label>Resume summary / pasted resume<textarea name="resumeText" rows="7" placeholder="Paste resume summary, projects, education, experience, achievements"></textarea></label>
-              <label>Achievements<textarea name="highlights" rows="5" placeholder="Built dashboards, optimized queries, managed production support"></textarea></label>
-              <button class="primary-button" type="submit">Save resume profile</button>
-            </form>
-            <section class="panel"><div class="panel-heading"><div><p class="section-kicker">Profile tips</p><h3>Make matching stronger</h3></div></div><div class="cost-list"><article><strong>Use clear skills</strong><span>Add languages, frameworks, databases, tools, and role-specific keywords.</span></article><article><strong>Add real outcomes</strong><span>Include projects, achievements, metrics, and production experience.</span></article><article><strong>Keep it current</strong><span>Update your profile when you change target roles or learn new skills.</span></article></div></section>
+          <div class="form-grid">
+            <label>Your name<input name="name" placeholder="Your full name" /></label>
+            <label>Email<input name="email" type="email" placeholder="you@gmail.com" /></label>
+            <label>Phone<input name="phone" placeholder="Phone number" /></label>
+            <label>Resume link<input name="resumeLink" placeholder="Google Drive, portfolio, or resume URL" /></label>
+            <label class="span-2">Resume summary<textarea name="resumeSummary" rows="7" placeholder="Paste your resume summary, projects, education, and experience here."></textarea></label>
           </div>
-        </section>
-      </main>
-    </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-    <script src="./app-config.js"></script>
-    <script src="./app.js"></script>
-  </body>
+          <div class="section-rule"></div>
+          <div class="panel-head tight">
+            <div>
+              <p class="eyebrow">Step 3</p>
+              <h2>Default email message</h2>
+            </div>
+          </div>
+          <label>Reusable email body<textarea name="defaultMail" rows="7" placeholder="Hi Hiring Team, I am interested in the role..."></textarea></label>
+          <p class="status-line" id="saveStatus"></p>
+        </form>
+      </section>
+
+      <section class="view" id="jobsView">
+        <article class="panel form-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Tracker</p>
+              <h2>Add application</h2>
+            </div>
+          </div>
+          <form id="jobForm" class="form-grid">
+            <label>Company<input name="company" placeholder="Company name" required /></label>
+            <label>Role<input name="role" placeholder="Software Developer" required /></label>
+            <label>Recruiter or career email<input name="email" type="email" placeholder="hr@company.com" /></label>
+            <label>Apply link<input name="applyUrl" placeholder="https://company.com/careers/job" /></label>
+            <label>Location<input name="location" placeholder="Remote / City" /></label>
+            <label>Status<select name="status"><option>Wishlist</option><option>Ready</option><option>Applied</option><option>Follow Up</option><option>Interview</option><option>Offer</option><option>Rejected</option></select></label>
+            <label>Follow-up date<input name="followUpDate" type="date" /></label>
+            <label class="span-2">Job description<textarea name="description" rows="5" placeholder="Paste the job description or important requirements."></textarea></label>
+            <button class="primary" type="submit">Save job</button>
+          </form>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Applications</p>
+              <h2>Your job tracker</h2>
+            </div>
+            <select id="statusFilter" aria-label="Filter jobs">
+              <option>All</option>
+              <option>Wishlist</option>
+              <option>Ready</option>
+              <option>Applied</option>
+              <option>Follow Up</option>
+              <option>Interview</option>
+              <option>Offer</option>
+              <option>Rejected</option>
+            </select>
+          </div>
+          <div class="job-list" id="jobsList"></div>
+        </article>
+      </section>
+
+      <section class="view" id="mailView">
+        <article class="panel form-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Apply kit</p>
+              <h2>Email draft</h2>
+            </div>
+            <div class="button-row">
+              <button class="secondary" id="copyMailBtn" type="button">Copy</button>
+              <button class="primary" id="openMailBtn" type="button">Open draft</button>
+            </div>
+          </div>
+          <div class="form-grid">
+            <label>Select job<select id="mailJobSelect"></select></label>
+            <label>Send to<input id="mailTo" type="email" placeholder="hr@company.com" /></label>
+            <label class="span-2">Subject<input id="mailSubject" placeholder="Application for Software Developer" /></label>
+            <label class="span-2">Email body<textarea id="mailBody" rows="13"></textarea></label>
+          </div>
+          <p class="status-line" id="mailStatus">Choose a job to prepare an email draft.</p>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="./app-config.js"></script>
+  <script src="./app.js"></script>
+</body>
 </html>
